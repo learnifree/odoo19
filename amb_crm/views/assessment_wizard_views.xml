@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Assessment Wizard View -->
+    <record id="view_assessment_wizard_form" model="ir.ui.view">
+        <field name="name">amb.assessment.wizard.form</field>
+        <field name="model">amb.assessment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Assessment">
+                <group>
+                    <group string="Opportunity Details">
+                        <field name="opportunity_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="destination_country" readonly="1"/>
+                        <field name="program_type"/>
+                    </group>
+                    <group string="Personal Information">
+                        <field name="customer_name" readonly="1"/>
+                        <field name="age"/>
+                        <field name="education_level"/>
+                        <field name="work_experience_years"/>
+                    </group>
+                </group>
+                <group string="Language Scores">
+                    <group>
+                        <field name="language_test_type"/>
+                    </group>
+                    <group>
+                        <field name="listening_score"/>
+                        <field name="reading_score"/>
+                        <field name="writing_score"/>
+                        <field name="speaking_score"/>
+                    </group>
+                </group>
+                <group string="CRS Score Preview">
+                    <group>
+                        <field name="crs_score" readonly="1" widget="integer"/>
+                    </group>
+                    <group>
+                        <p class="text-muted">Live preview of your CRS score based on entered information.</p>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_create_assessment" string="Create Assessment" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Assessment Wizard Action -->
+    <record id="action_assessment_wizard" model="ir.actions.act_window">
+        <field name="name">Create Assessment</field>
+        <field name="res_model">amb.assessment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</data>

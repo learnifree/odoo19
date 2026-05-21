@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Opportunity Convert Wizard View -->
+    <record id="view_opportunity_convert_wizard_form" model="ir.ui.view">
+        <field name="name">amb.opportunity.convert.wizard.form</field>
+        <field name="model">amb.opportunity.convert.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Convert to Client Case">
+                <group>
+                    <group string="Opportunity Details">
+                        <field name="opportunity_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="destination_country" readonly="1"/>
+                    </group>
+                    <group string="Case Details">
+                        <field name="program_type"/>
+                        <field name="case_officer_id"/>
+                        <field name="team_id"/>
+                    </group>
+                </group>
+                <group string="Case Information">
+                    <group>
+                        <field name="case_description"/>
+                        <field name="target_date"/>
+                    </group>
+                </group>
+                <group string="Link Existing Records">
+                    <group>
+                        <field name="link_assessments"/>
+                        <field name="link_payments"/>
+                        <field name="link_agreements"/>
+                    </group>
+                    <group>
+                        <p class="text-muted">
+                            Select which existing records should be linked to the new client case.
+                        </p>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_convert_to_client" string="Convert to Client Case" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Opportunity Convert Wizard Action -->
+    <record id="action_opportunity_convert_wizard" model="ir.actions.act_window">
+        <field name="name">Convert to Client Case</field>
+        <field name="res_model">amb.opportunity.convert.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</data>

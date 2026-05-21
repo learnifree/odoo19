@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Client Case Tree View -->
+    <record id="view_amb_client_case_tree" model="ir.ui.view">
+        <field name="name">amb.client.case.tree</field>
+        <field name="model">amb.client.case</field>
+        <field name="arch" type="xml">
+            <list string="Client Cases" multi_edit="1">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="destination_country"/>
+                <field name="program_type"/>
+                <field name="case_officer_id" widget="many2one_avatar_user"/>
+                <field name="state"/>
+                <field name="priority"/>
+                <field name="case_start_date"/>
+                <field name="total_paid"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Client Case Form View -->
+    <record id="view_amb_client_case_form" model="ir.ui.view">
+        <field name="name">amb.client.case.form</field>
+        <field name="model">amb.client.case</field>
+        <field name="arch" type="xml">
+            <form string="Client Case">
+                <header>
+                    <button name="action_mark_submitted" string="Mark Submitted" type="object" 
+                             class="btn-primary" invisible="state != 'active'"/>
+                    <button name="action_mark_under_review" string="Under Review" type="object" 
+                             class="btn-success" invisible="state != 'submitted'"/>
+                    <button name="action_mark_approved" string="Approved" type="object" 
+                             class="btn-success" invisible="state not in ('submitted', 'under_review')"/>
+                    <button name="action_mark_rejected" string="Rejected" type="object" 
+                             class="btn-danger" invisible="state not in ('submitted', 'under_review')"/>
+                    <button name="action_mark_pending_docs" string="Pending Docs" type="object" 
+                             class="btn-warning" invisible="state != 'active'"/>
+                    <button name="action_create_activity" string="Schedule Activity" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,submitted,under_review,approved,rejected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Client Information">
+                            <field name="partner_id" options="{'no_open': True}"/>
+                            <field name="case_officer_id"/>
+                            <field name="team_id"/>
+                        </group>
+                        <group string="Case Details">
+                            <field name="destination_country"/>
+                            <field name="program_type"/>
+                            <field name="priority"/>
+                            <field name="case_start_date"/>
+                            <field name="target_date"/>
+                        </group>
+                    </group>
+                    <group string="Timeline">
+                        <group>
+                            <field name="submitted_date" readonly="1"/>
+                            <field name="decision_date" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="result" readonly="1"/>
+                            <field name="result_notes"/>
+                        </group>
+                    </group>
+                    <group string="Case Notes">
+                        <field name="case_description"/>
+                        <field name="case_notes"/>
+                    </group>
+                    <notebook>
+                        <page string="Assessments" name="assessments">
+                            <field name="assessment_ids"/>
+                            <button name="action_view_assessments" string="View All" type="object" class="btn-secondary"/>
+                        </page>
+                        <page string="Payments" name="payments">
+                            <field name="payment_ids"/>
+                            <div class="oe_inline">
+                                <label for="total_paid" string="Total Paid: "/>
+                                <field name="total_paid" class="oe_inline" readonly="1"/>
+                            </div>
+                        </page>
+                        <page string="Agreements" name="agreements">
+                            <field name="agreement_ids"/>
+                        </page>
+                        <page string="Documents" name="documents">
+                            <group>
+                                <field name="document_ids" widget="many2many_binary"/>
+                            </group>
+                            <div class="oe_chatter">
+                                <field name="message_follower_ids"/>
+                                <field name="activity_ids"/>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Client Case Search View -->
+    <record id="view_amb_client_case_search" model="ir.ui.view">
+        <field name="name">amb.client.case.search</field>
+        <field name="model">amb.client.case</field>
+        <field name="arch" type="xml">
+            <search string="Search Client Cases">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="case_officer_id"/>
+                <separator/>
+                <filter string="Active" name="state_active" domain="[('state', '=', 'active')]"/>
+                <filter string="Submitted" name="state_submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter string="Under Review" name="state_under_review" domain="[('state', '=', 'under_review')]"/>
+                <filter string="Approved" name="state_approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="state_rejected" domain="[('state', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Canada" name="canada" domain="[('destination_country', '=', 'canada')]"/>
+                <filter string="Australia" name="australia" domain="[('destination_country', '=', 'australia')]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Client Case Action -->
+    <record id="action_amb_client_case" model="ir.actions.act_window">
+        <field name="name">Client Cases</field>
+        <field name="res_model">amb.client.case</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first client case
+            </p>
+            <p>
+                Client cases are created from converted opportunities.
+            </p>
+        </field>
+    </record>
+</data>

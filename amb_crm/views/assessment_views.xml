@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Assessment Tree View -->
+    <record id="view_amb_assessment_tree" model="ir.ui.view">
+        <field name="name">amb.assessment.tree</field>
+        <field name="model">amb.assessment</field>
+        <field name="arch" type="xml">
+            <list string="Assessments" multi_edit="1">
+                <field name="name"/>
+                <field name="customer_name"/>
+                <field name="opportunity_id"/>
+                <field name="destination_country"/>
+                <field name="program_type"/>
+                <field name="crs_score"/>
+                <field name="eligibility_status"/>
+                <field name="assessor_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Assessment Form View -->
+    <record id="view_amb_assessment_form" model="ir.ui.view">
+        <field name="name">amb.assessment.form</field>
+        <field name="model">amb.assessment</field>
+        <field name="arch" type="xml">
+            <form string="Assessment">
+                <header>
+                    <button name="action_mark_in_progress" string="Start Assessment" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_update_eligibility" string="Calculate Eligibility" type="object" class="btn-success"/>
+                    <button name="action_mark_completed" string="Complete" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                    <button name="action_create_invoice" string="Create Invoice" type="object" class="btn-primary"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <group>
+                        <group string="Assessment Info">
+                            <field name="name" readonly="1"/>
+                            <field name="customer_name" readonly="1"/>
+                            <field name="opportunity_id" options="{'no_open': True}"/>
+                            <field name="destination_country"/>
+                            <field name="program_type"/>
+                        </group>
+                        <group string="Eligibility Result">
+                            <field name="eligibility_status"/>
+                            <field name="crs_score" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Personal Information">
+                        <group>
+                            <field name="age"/>
+                            <field name="education_level"/>
+                            <field name="work_experience_years"/>
+                        </group>
+                        <group>
+                            <field name="language_test_type"/>
+                        </group>
+                        <group>
+                            <field name="listening_score"/>
+                            <field name="reading_score"/>
+                            <field name="writing_score"/>
+                            <field name="speaking_score"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Work History" name="work_history">
+                            <field name="work_history_ids">
+                                <list editable="bottom">
+                                    <field name="company_name"/>
+                                    <field name="position"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="is_current"/>
+                                    <field name="years_employed" readonly="1"/>
+                                    <field name="months_employed" readonly="1"/>
+                                    <field name="total_years" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Assessment Notes" name="notes">
+                            <field name="assessment_notes"/>
+                        </page>
+                        <page string="Next Steps" name="next_steps">
+                            <field name="next_steps"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Assessment Search View -->
+    <record id="view_amb_assessment_search" model="ir.ui.view">
+        <field name="name">amb.assessment.search</field>
+        <field name="model">amb.assessment</field>
+        <field name="arch" type="xml">
+            <search string="Search Assessments">
+                <field name="opportunity_id"/>
+                <field name="destination_country"/>
+                <field name="assessor_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Assessment Action -->
+    <record id="action_amb_assessment" model="ir.actions.act_window">
+        <field name="name">Assessments</field>
+        <field name="res_model">amb.assessment</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first assessment
+            </p>
+        </field>
+    </record>
+</data>

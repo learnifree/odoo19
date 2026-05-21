@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Payment Tree View -->
+    <record id="view_amb_payment_tree" model="ir.ui.view">
+        <field name="name">amb.payment.tree</field>
+        <field name="model">amb.payment</field>
+        <field name="arch" type="xml">
+            <list string="Payments" multi_edit="1">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="opportunity_id"/>
+                <field name="program_type"/>
+                <field name="amount"/>
+                <field name="invoice_number"/>
+                <field name="invoice_amount"/>
+                <field name="invoice_outstanding_balance"/>
+                <field name="invoice_payment_state"/>
+                <field name="invoice_state"/>
+                <field name="state"/>
+                <field name="payment_date"/>
+                <field name="invoice_due_date"/>
+                <field name="payment_method"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Invoice List View (linked to payments) -->
+    <record id="view_amb_payment_invoice_tree" model="ir.ui.view">
+        <field name="name">amb.payment.invoice.tree</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <list string="Invoices" multi_edit="1">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="invoice_date"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+                <field name="invoice_origin"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Invoice Action (for Payments menu) -->
+    <record id="action_amb_payment_invoice" model="ir.actions.act_window">
+        <field name="name">Invoices</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('move_type', '=', 'out_invoice'), ('ref', 'like', 'Payment:')]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No invoices found from payments
+            </p>
+        </field>
+    </record>
+
+    <!-- Payment Form View -->
+    <record id="view_amb_payment_form" model="ir.ui.view">
+        <field name="name">amb.payment.form</field>
+        <field name="model">amb.payment</field>
+        <field name="arch" type="xml">
+            <form string="Payment">
+                <header>
+                    <button name="action_create_invoice" string="Create Invoice" type="object" class="btn-primary" invisible="invoice_id"/>
+                    <button name="action_mark_paid" string="Mark as Paid" type="object" class="btn-success" invisible="state not in ('pending', 'partial')"/>
+                    <button name="action_record_odoo_payment" string="Record Payment" type="object" class="btn-info" invisible="invoice_id or account_payment_id"/>
+                    <button name="action_generate_contract" string="Generate Contract" type="object" class="btn-primary" invisible="state != 'paid'"/>
+                    <button name="action_view_contract" string="View Contract" type="object" class="btn-info" invisible="state != 'paid'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('paid', 'cancelled')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,partial,paid,overdue"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <!-- Invoice Button -->
+                        <button class="oe_stat_button" type="object" name="action_create_invoice" icon="fa fa-file-text-o" invisible="invoice_id">
+                            <field name="invoice_number" widget="statinfo" string="Invoice"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_create_invoice" icon="fa fa-file-text" invisible="not invoice_id">
+                            <field name="invoice_number" widget="statinfo" string="Invoice"/>
+                        </button>
+                        <!-- Odoo Payment Button -->
+                        <button class="oe_stat_button" type="object" name="action_record_odoo_payment" icon="fa fa-money" invisible="account_payment_id">
+                            <span>Record Odoo Payment</span>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_record_odoo_payment" icon="fa fa-check-circle" invisible="not account_payment_id">
+                            <field name="account_payment_id" widget="statinfo" string="Odoo Payment"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Client Info">
+                            <field name="name" readonly="1"/>
+                            <field name="partner_id" options="{'no_open': True}"/>
+                            <field name="opportunity_id" options="{'no_open': True}"/>
+                            <field name="assessment_id" options="{'no_open': True}"/>
+                            <field name="program_type" options="{'no_open': True}"/>
+                        </group>
+                        <group string="Expected Income">
+                            <!-- <field name="amount"/> -->
+                            <field name="expected_amount"/>
+                            <!-- <field name="remaining_amount" readonly="1"/> -->
+                        </group>
+                    </group>
+                    <!-- Invoice Information Section - Enhanced with Amount, Status, Due Date, Balance -->
+                    <group string="Invoice &amp; Payment" invisible="not invoice_id">
+                        <group string="Invoice Details">
+                            <field name="invoice_number" readonly="1"/>
+                            <field name="invoice_state" readonly="1"/>
+                            <field name="invoice_payment_state" readonly="1"/>
+                        </group>
+                        <group string="Amount">
+                            <field name="invoice_amount" readonly="1"/>
+                            <field name="invoice_paid_amount" readonly="1"/>
+                            <field name="invoice_outstanding_balance" readonly="1"/>
+                        </group>
+                    </group>
+                    <!-- <group string="Invoice Dates &amp; Payment" invisible="not invoice_id">
+                        <group string="Dates">
+                            <field name="invoice_date" readonly="1"/>
+                            <field name="invoice_due_date" readonly="1"/>
+                            <field name="invoice_overdue" readonly="1"/>
+                        </group>
+                        <group string="Payment Link">
+                            <field name="account_payment_id" readonly="1" options="{'no_open': True}"/>
+                        </group>
+                    </group> -->
+                    <group string="Payment Details">
+                        <group>
+                            <field name="payment_date"/>
+                            <field name="due_date"/>
+                            <field name="payment_method"/>
+                            <field name="is_overdue" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="transaction_reference"/>
+                            <field name="bank_reference"/>
+                        </group>
+                    </group>
+                    <group string="Installment Info">
+                        <group>
+                            <field name="installment_number"/>
+                            <field name="total_installments"/>
+                        </group>
+                        <group>
+                            <field name="receipt_number" readonly="1"/>
+                            <field name="receipt_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                            <field name="internal_notes"/>
+                        </page>
+                        <page string="Attachments" name="attachments">
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Payment Search View -->
+    <record id="view_amb_payment_search" model="ir.ui.view">
+        <field name="name">amb.payment.search</field>
+        <field name="model">amb.payment</field>
+        <field name="arch" type="xml">
+            <search string="Search Payments">
+                <field name="partner_id"/>
+                <field name="opportunity_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Payment Action -->
+    <record id="action_amb_payment" model="ir.actions.act_window">
+        <field name="name">Payments</field>
+        <field name="res_model">amb.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record your first payment
+            </p>
+        </field>
+    </record>
+</data>

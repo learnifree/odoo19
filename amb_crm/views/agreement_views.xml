@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Agreement Tree View -->
+    <record id="view_amb_agreement_tree" model="ir.ui.view">
+        <field name="name">amb.agreement.tree</field>
+        <field name="model">amb.agreement</field>
+        <field name="arch" type="xml">
+            <list string="Agreements" multi_edit="1">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="opportunity_id"/>
+                <field name="agreement_type"/>
+                <field name="total_fee"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Agreement Form View -->
+    <record id="view_amb_agreement_form" model="ir.ui.view">
+        <field name="name">amb.agreement.form</field>
+        <field name="model">amb.agreement</field>
+        <field name="arch" type="xml">
+            <form string="Agreement">
+                <header>
+                    <button name="action_send_for_signing" string="Send for Signing" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_sign" string="Sign Agreement" type="object" class="btn-success" invisible="state not in ('sent', 'partially_signed')"/>
+                    <button name="action_mark_active" string="Activate" type="object" class="btn-success" invisible="state != 'signed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                    <group string="Agreement Info">
+                        <field name="name" readonly="1"/>
+                        <field name="opportunity_id" options="{'no_open': True}"/>
+                        <field name="template_id"/>
+                        <field name="agreement_type"/>
+                    </group>
+                        <group string="Details">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="total_fee"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Service Scope" name="service_scope">
+                            <field name="service_scope"/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Agreement Search View -->
+    <record id="view_amb_agreement_search" model="ir.ui.view">
+        <field name="name">amb.agreement.search</field>
+        <field name="model">amb.agreement</field>
+        <field name="arch" type="xml">
+            <search string="Search Agreements">
+                <field name="partner_id"/>
+                <field name="opportunity_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Agreement Action -->
+    <record id="action_amb_agreement" model="ir.actions.act_window">
+        <field name="name">Agreements</field>
+        <field name="res_model">amb.agreement</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first agreement
+            </p>
+        </field>
+    </record>
+</data>

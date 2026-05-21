@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Lead Tree View -->
+    <record id="view_amb_lead_tree" model="ir.ui.view">
+        <field name="name">amb.lead.tree</field>
+        <field name="model">amb.lead</field>
+        <field name="arch" type="xml">
+            <list string="Leads" multi_edit="1">
+                <field name="name"/>
+                <field name="partner_name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="destination_country"/>
+                <field name="program_interest"/>
+                <field name="source"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="priority"/>
+                <field name="state"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Lead Form View -->
+    <record id="view_amb_lead_form" model="ir.ui.view">
+        <field name="name">amb.lead.form</field>
+        <field name="model">amb.lead</field>
+        <field name="arch" type="xml">
+            <form string="Lead">
+                <header>
+                    <button name="action_mark_contacted" string="Mark as Contacted" type="object" class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_mark_qualified" string="Mark as Qualified" type="object" class="btn-success" invisible="state not in ('new', 'contacted')"/>
+                    <button name="action_convert_to_opportunity" string="Convert to Opportunity" type="object" class="btn-secondary" invisible="state not in ('new', 'contacted', 'qualified')"/>
+                    <button name="action_mark_not_interested" string="Not Interested" type="object" invisible="state not in ('new', 'contacted', 'qualified')"/>
+                    <button name="action_reopen" string="Reopen" type="object" invisible="state == 'new'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,contacted,qualified,converted"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Lead Information">
+                            <field name="name" readonly="1"/>
+                            <field name="partner_name"/>
+                            <field name="email"/>
+                            <field name="phone"/>
+                            <field name="mobile"/>
+                        </group>
+                        <group string="Lead Profile">
+                            <field name="destination_country"/>
+                            <field name="program_interest"/>
+                            <field name="source"/>
+                            <field name="priority"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                    <group string="Details">
+                        <group>
+                            <field name="age"/>
+                            <field name="education_level"/>
+                            <field name="occupation"/>
+                        </group>
+                        <group>
+                            <field name="nationality_id"/>
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Work History" name="work_history">
+                            <group>
+                                <group>
+                                    <field name="total_work_experience" readonly="1"/>
+                                </group>
+                            </group>
+                            <field name="work_history_ids">
+                                <list editable="bottom">
+                                    <field name="company_name"/>
+                                    <field name="position"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="is_current"/>
+                                    <field name="years_employed" readonly="1"/>
+                                    <field name="months_employed" readonly="1"/>
+                                    <field name="total_years" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Lead Search View -->
+    <record id="view_amb_lead_search" model="ir.ui.view">
+        <field name="name">amb.lead.search</field>
+        <field name="model">amb.lead</field>
+        <field name="arch" type="xml">
+            <search string="Search Leads">
+                <field name="partner_name"/>
+                <field name="email"/>
+                <field name="phone"/>
+                <field name="user_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Lead Action -->
+    <record id="action_amb_lead" model="ir.actions.act_window">
+        <field name="name">Leads</field>
+        <field name="res_model">amb.lead</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first lead
+            </p>
+        </field>
+    </record>
+</data>

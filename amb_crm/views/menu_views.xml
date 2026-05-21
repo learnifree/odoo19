@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Main Menu: AMB CRM -->
+    <menuitem id="menu_amb_crm_root"
+              name="AMB CRM"
+              sequence="60"
+              web_icon="amb_crm,static/description/icon.png"/>
+
+    <!-- Submenu: Leads -->
+    <menuitem id="menu_amb_lead"
+              name="Leads"
+              parent="menu_amb_crm_root"
+              action="action_amb_lead"
+              sequence="10"/>
+
+    <!-- Submenu: Opportunities -->
+    <menuitem id="menu_amb_opportunity"
+              name="Opportunities"
+              parent="menu_amb_crm_root"
+              action="action_amb_opportunity"
+              sequence="20"/>
+
+    <!-- Submenu: Assessments -->
+    <menuitem id="menu_amb_assessment"
+              name="Assessments"
+              parent="menu_amb_crm_root"
+              action="action_amb_assessment"
+              sequence="30"/>
+
+    <!-- Submenu: Payments -->
+    <menuitem id="menu_amb_payment"
+              name="Payments"
+              parent="menu_amb_crm_root"
+              action="action_amb_payment"
+              sequence="50"/>
+
+    <!-- Submenu: Invoices -->
+    <menuitem id="menu_amb_payment_invoice"
+              name="Invoices"
+              parent="menu_amb_crm_root"
+              action="action_amb_payment_invoice"
+              sequence="51"/>
+
+    <!-- Submenu: Agreements -->
+    <menuitem id="menu_amb_agreement"
+              name="Agreements"
+              parent="menu_amb_crm_root"
+              action="action_amb_agreement"
+              sequence="60"/>
+
+    <!-- Separator -->
+    <menuitem id="menu_amb_config"
+              name="Configuration"
+              parent="menu_amb_crm_root"
+              sequence="100"/>
+
+    <!-- Submenu: Service Packages -->
+    <menuitem id="menu_amb_service_package"
+              name="Service Packages"
+              parent="menu_amb_config"
+              action="action_amb_service_package"
+              sequence="10"/>
+</data>

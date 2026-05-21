@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- Lead Convert Wizard View -->
+    <record id="view_lead_convert_wizard_form" model="ir.ui.view">
+        <field name="name">amb.lead.convert.wizard.form</field>
+        <field name="model">amb.lead.convert.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Convert Lead to Opportunity">
+                <group>
+                    <group string="Customer Information">
+                        <field name="partner_name" readonly="1"/>
+                        <field name="email" readonly="1"/>
+                        <field name="phone" readonly="1"/>
+                    </group>
+                    <group string="Program Details">
+                        <field name="destination_country" readonly="1"/>
+                        <field name="program_interest"/>
+                    </group>
+                </group>
+                <group string="Options">
+                    <group>
+                        <field name="create_partner"/>
+                        <field name="partner_id" invisible="create_partner"/>
+                    </group>
+                    <group>
+                        <field name="user_id"/>
+                        <field name="team_id"/>
+                    </group>
+                </group>
+                <group string="Notes">
+                    <field name="notes"/>
+                </group>
+                <footer>
+                    <button name="action_convert" string="Convert to Opportunity" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Lead Convert Wizard Action -->
+    <record id="action_lead_convert_wizard" model="ir.actions.act_window">
+        <field name="name">Convert to Opportunity</field>
+        <field name="res_model">amb.lead.convert.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</data>
