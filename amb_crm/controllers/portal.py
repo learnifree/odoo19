@@ -113,7 +113,7 @@ class AmbContractPortal(CustomerPortal):
         return request.make_response(pdf_content, headers=pdf_http_headers)
 
 
-class AmbContractController(HttpController):
+class AmbContractController(Controller):
     """HTTP Controller for contract signing API"""
 
     @route('/amb/api/contract/sign', type='json', auth='public', csrf=False)
