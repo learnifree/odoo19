@@ -1,88 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Email Template: Contract Ready for Signing -->
-    <record id="email_template_agreement_signing" model="mail.template">
-        <field name="name">Contract Ready for Signing</field>
-        <field name="model_id" ref="amb_crm.model_amb_agreement"/>
-        <field name="email_from">{{ object.company_id.email or 'noreply@example.com' }}</field>
-        <field name="email_to">{{ object.partner_id.email }}</field>
-        <field name="subject">Your Service Agreement is Ready for Signing - {{ object.name }}</field>
-        <field name="body_html">
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #333;">Dear {{ object.partner_id.name }},</h2>
-                
-                <p>Your service agreement has been prepared and is ready for your signature.</p>
-                
-                <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                    <h3 style="margin-top: 0;">Agreement Details</h3>
-                    <p><strong>Agreement Reference:</strong> {{ object.name }}</p>
-                    <p><strong>Service Type:</strong> {{ object.agreement_type }}</p>
-                    <p t-if="object.program_type"><strong>Program:</strong> {{ object.program_type.name }}</p>
-                    <p t-if="object.total_fee"><strong>Total Fee:</strong> {{ object.total_fee }}</p>
-                </div>
-                
-                <p>To review and sign your agreement, please click the link below:</p>
-                
-                <p style="text-align: center; margin: 30px 0;">
-                    <a t-attf-href="/amb/contract/sign/{{ object.access_token }}" 
-                       style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">
-                        Sign Agreement
-                    </a>
-                </p>
-                
-                <p>Or copy and paste this link in your browser:</p>
-                <p style="word-break: break-all; color: #007bff;">/amb/contract/sign/{{ object.access_token }}</p>
-                
-                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;"/>
-                
-                <p style="color: #666; font-size: 12px;">
-                    If you have any questions about this agreement, please contact us.
-                </p>
-                
-                <p style="margin-top: 20px;">Best regards,<br/>
-                <strong>{{ object.company_id.name or 'AMB Solutions' }}</strong>
-                </p>
-            </div>
-        </field>
-        <field name="lang">{{ object.partner_id.lang }}</field>
-    </record>
-
-    <!-- Email Template: Contract Signed Notification -->
-    <record id="email_template_contract_signed" model="mail.template">
-        <field name="name">Contract Signed Notification</field>
-        <field name="model_id" ref="amb_crm.model_amb_agreement"/>
-        <field name="email_from">{{ object.company_id.email or 'noreply@example.com' }}</field>
-        <field name="email_to">{{ object.user_id.email or object.company_id.email }}</field>
-        <field name="subject">Contract Signed - {{ object.name }} by {{ object.signer_name }}</field>
-        <field name="body_html" type="html">
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #28a745;">Contract Signed Successfully</h2>
-                
-                <p>The following contract has been signed by the customer.</p>
-                
-                <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                    <h3 style="margin-top: 0;">Agreement Details</h3>
-                    <p><strong>Agreement Reference:</strong> {{ object.name }}</p>
-                    <p><strong>Customer:</strong> {{ object.partner_id.name }}</p>
-                    <p><strong>Service Type:</strong> {{ object.agreement_type }}</p>
-                    <p><strong>Signer:</strong> {{ object.signer_name }}</p>
-                    <p><strong>Signed Date:</strong> {{ object.signature_date }}</p>
-                </div>
-                
-                <p>Please review the signed contract and proceed with the next steps.</p>
-                
-                <p style="margin-top: 20px;">
-                    <a href="/web#id={{ object.id }}&amp;model=amb.agreement&amp;view_type=form" 
-                       style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px;">
-                        View Contract
-                    </a>
-                </p>
-                
-                <p style="margin-top: 20px;">Best regards,<br/>
-                <strong>AMB CRM System</strong>
-                </p>
-            </div>
-        </field>
-        <field name="lang">{{ object.user_id.lang or object.company_id.partner_id.lang }}</field>
-    </record>
+    <data noupdate="1">
+        <record id="email_template_agreement_signing" model="mail.template">
+            <field name="name">Contract Ready for Signing</field>
+            <field name="model_id" ref="amb_crm.model_amb_agreement"/>
+            <field name="email_from">{{ object.company_id.email or 'noreply@example.com' }}</field>
+            <field name="email_to">{{ object.partner_id.email }}</field>
+            <field name="subject">Your Service Agreement is Ready for Signing - {{ object.name }}</field>
+            <field name="body_html" type="html">
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <h2 style="color: #333;">Dear {{ object.partner_id.name }},</h2>
+    <p>Your service agreement has been prepared and is ready for your signature.</p>
+    <p>To sign, click the link below:</p>
+    <p><a t-attf-href="/amb/contract/sign/{{ object.access_token }}">Sign Agreement</a></p>
+</div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+        </record>
+        <record id="email_template_contract_signed" model="mail.template">
+            <field name="name">Contract Signed Notification</field>
+            <field name="model_id" ref="amb_crm.model_amb_agreement"/>
+            <field name="email_from">{{ object.company_id.email or 'noreply@example.com' }}</field>
+            <field name="email_to">{{ object.user_id.email or object.company_id.email }}</field>
+            <field name="subject">Contract Signed - {{ object.name }}</field>
+            <field name="body_html" type="html">
+<div>
+    <h2>Contract Signed Successfully</h2>
+    <p>Signed by: {{ object.signer_name }}</p>
+</div>
+            </field>
+            <field name="lang">{{ object.user_id.lang or object.company_id.partner_id.lang }}</field>
+        </record>
+    </data>
 </odoo>
