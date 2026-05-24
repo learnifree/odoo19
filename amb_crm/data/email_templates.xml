@@ -7,7 +7,7 @@
         <field name="email_from">{{ object.company_id.email or 'noreply@example.com' }}</field>
         <field name="email_to">{{ object.partner_id.email }}</field>
         <field name="subject">Your Service Agreement is Ready for Signing - {{ object.name }}</field>
-        <field name="body_html" type="html">
+        <field name="body_html">
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h2 style="color: #333;">Dear {{ object.partner_id.name }},</h2>
                 
@@ -24,7 +24,7 @@
                 <p>To review and sign your agreement, please click the link below:</p>
                 
                 <p style="text-align: center; margin: 30px 0;">
-                    <a href="/amb/contract/sign/{{ object.access_token }}" 
+                    <a t-attf-href="/amb/contract/sign/{{ object.access_token }}" 
                        style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-size: 16px;">
                         Sign Agreement
                     </a>
