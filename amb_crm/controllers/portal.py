@@ -17,6 +17,10 @@ class AmbContractPortal(CustomerPortal):
     @route(['/amb/contract/sign/<string:token>'], type='http', auth='public', website=True)
     def contract_sign_page(self, token, **kwargs):
         """Landing page for contract signing via token"""
+        # Validate token is not empty
+        if not token or len(token) < 10:
+            return request.redirect('/web/login?error=invalid_token')
+        
         # Search agreement by access token
         agreement = request.env['amb.agreement'].sudo().search([
             ('access_token', '=', token)

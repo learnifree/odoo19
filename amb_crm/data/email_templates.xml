@@ -12,7 +12,7 @@
     <h2 style="color: #333;">Dear {{ object.partner_id.name }},</h2>
     <p>Your service agreement has been prepared and is ready for your signature.</p>
     <p>To sign, click the link below:</p>
-    <p><a t-attf-href="/amb/contract/sign/{{ object.access_token }}">Sign Agreement</a></p>
+    <p><a href="/amb/contract/sign/[[object.access_token]]">Sign Agreement</a></p>
 </div>
             </field>
             <field name="lang">{{ object.partner_id.lang }}</field>

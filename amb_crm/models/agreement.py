@@ -221,8 +221,8 @@ class AmbAgreement(models.Model):
         """Generate access token for signing"""
         import uuid
         for agreement in self:
-            if not agreement.access_token:
-                agreement.write({'access_token': str(uuid.uuid4())})
+            # Always regenerate token to ensure it's valid
+            agreement.write({'access_token': str(uuid.uuid4())})
 
     # === Action Methods ===
 
