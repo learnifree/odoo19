@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Contract Signing Page Template -->
-    <template id="contract_sign_page" name="Sign Contract">
+    <template id="amb_crm.contract_sign_page" name="Sign Contract">
         <t t-call="website.layout">
             <div class="container">
                 <div class="row mt-4">
@@ -160,7 +160,7 @@
     </template>
     
     <!-- Already Signed Page -->
-    <template id="contract_already_signed" name="Contract Already Signed">
+    <template id="amb_crm.contract_already_signed" name="Contract Already Signed">
         <t t-call="website.layout">
             <div class="container">
                 <div class="row mt-4">
@@ -177,7 +177,7 @@
     </template>
     
     <!-- Contract Not Available Page -->
-    <template id="contract_not_available" name="Contract Not Available">
+    <template id="amb_crm.contract_not_available" name="Contract Not Available">
         <t t-call="website.layout">
             <div class="container">
                 <div class="row mt-4">
@@ -195,7 +195,7 @@
     </template>
     
     <!-- Success Page -->
-    <template id="contract_signed_success" name="Contract Signed Successfully">
+    <template id="amb_crm.contract_signed_success" name="Contract Signed Successfully">
         <t t-call="website.layout">
             <div class="container">
                 <div class="row mt-4">
