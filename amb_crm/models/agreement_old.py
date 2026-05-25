@@ -5,9 +5,7 @@ Agreement Model for AMB CRM
 Handles contract/agreement generation and e-signature support.
 """
 
-import uuid  # FIX: moved to module level — was inside generate_access_token() causing repeated imports
-
-from odoo import models, fields, api, _  # FIX: added _ for translation (was missing, caused NameError)
+from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 
@@ -115,8 +113,6 @@ class AmbAgreement(models.Model):
     )
 
     # E-Signature Fields
-    # NOTE: portal.mixin also provides access_token — keeping this explicit field
-    # ensures index=True for fast token lookups in sudo().search()
     access_token = fields.Char(
         string='Access Token',
         copy=False,
@@ -204,30 +200,28 @@ class AmbAgreement(models.Model):
         """Generate sequence for new agreements"""
         if isinstance(vals_list, dict):
             vals_list = [vals_list]
-
+        
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('amb.agreement') or 'New'
-
+            
             # Initialize body_html from template if not provided
             if not vals.get('body_html') and vals.get('template_id'):
                 template = self.env['amb.agreement.template'].browse(vals['template_id'])
                 if template.exists():
                     vals['body_html'] = template.body_html
-
+            
             # Set default placeholder if still no body_html
             if not vals.get('body_html'):
                 vals['body_html'] = '<p>Agreement content pending...</p>'
-
+        
         return super().create(vals_list)
 
     def generate_access_token(self):
-        """Generate a fresh UUID access token for portal signing.
-
-        Called every time the agreement is sent, ensuring the token
-        is always valid and never reused from a previous send.
-        """
+        """Generate access token for signing"""
+        import uuid
         for agreement in self:
+            # Always regenerate token to ensure it's valid
             agreement.write({'access_token': str(uuid.uuid4())})
 
     # === Action Methods ===
@@ -237,12 +231,13 @@ class AmbAgreement(models.Model):
         for agreement in self:
             agreement.generate_access_token()
             agreement.write({'state': 'sent'})
-
+            
+            # Send notification email
             template = self.env.ref('amb_crm.email_template_agreement_signing', raise_if_not_found=False)
             if template:
                 template.send_mail(agreement.id, force_send=True)
             else:
-                # FIX: was using _() without importing it — now imported at top of file
+                # Fallback: post message in chatter
                 agreement.message_post(
                     body=_('Agreement sent for signing. Customer can sign at: /amb/contract/sign/%s') % agreement.access_token,
                     message_type='notification',
@@ -253,8 +248,8 @@ class AmbAgreement(models.Model):
         """Sign the agreement (placeholder for portal signing)"""
         self.ensure_one()
         if self.state not in ('sent', 'partially_signed'):
-            raise ValidationError(_('Agreement must be sent for signing first'))
-
+            raise ValidationError('Agreement must be sent for signing first')
+        
         self.write({
             'state': 'signed',
             'signature_date': fields.Datetime.now(),
@@ -284,8 +279,8 @@ class AmbAgreement(models.Model):
         """Download signed document"""
         self.ensure_one()
         if not self.signed_document:
-            raise ValidationError(_('No signed document available'))
-
+            raise ValidationError('No signed document available')
+        
         return {
             'type': 'ir.actions.act_url',
             'url': '/web/content?model=amb.agreement&id=%d&field=signed_document&filename=%s' % (
@@ -313,9 +308,10 @@ class AmbAgreement(models.Model):
         for agreement in self:
             if not agreement.partner_id:
                 continue
-
+            
             partner = agreement.partner_id
-
+            
+            # Replace placeholders
             replacements = {
                 '[[customer_name]]': partner.name or '',
                 '[[customer_email]]': partner.email or '',
@@ -327,21 +323,22 @@ class AmbAgreement(models.Model):
                 '[[total_fee]]': str(agreement.total_fee) if agreement.total_fee else '',
                 '[[program_type]]': agreement.program_type.name if agreement.program_type else '',
             }
-
+            
             body = agreement.body_html
             for placeholder, value in replacements.items():
                 body = body.replace(placeholder, str(value))
-
+            
             agreement.body_html = body
 
     def _notify_signature(self):
         """Send notification when contract is signed"""
         for agreement in self:
+            # Send email notification to the team
             template = self.env.ref('amb_crm.email_template_contract_signed', raise_if_not_found=False)
             if template:
                 template.send_mail(agreement.id, force_send=True)
             else:
-                # FIX: _() was used without being imported — now imported at top of file
+                # Fallback: post message in chatter
                 agreement.message_post(
                     body=_('Contract signed by %s on %s') % (
                         agreement.signer_name or 'Customer',
@@ -373,6 +370,7 @@ class AmbAgreementTemplate(models.Model):
         ('other', 'Other'),
     ], string='Agreement Type', required=True)
 
+    # Program Type - for auto-assignment based on immigration program
     program_type = fields.Many2one(
         'product.product',
         string='Program Type',

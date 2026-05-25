@@ -12,14 +12,7 @@
     <h2 style="color: #333;">Dear {{ object.partner_id.name }},</h2>
     <p>Your service agreement has been prepared and is ready for your signature.</p>
     <p>To sign, click the link below:</p>
-    <!-- FIX: Use Jinja2 {{ }} syntax with get_base_url() for absolute URL.
-         The portal route is /amb/contract/sign/<token> (string token in path).
-         [[...]] is Mako syntax and is NOT evaluated in Odoo 19 body_html fields. -->
-    <p>
-        <a t-att-href="'%s/amb/contract/sign/%s' % (object.get_base_url(), object.access_token)">
-            Sign Agreement
-        </a>
-    </p>
+    <p><a href="/amb/contract/sign/[[object.access_token]]">Sign Agreement</a></p>
 </div>
             </field>
             <field name="lang">{{ object.partner_id.lang }}</field>
