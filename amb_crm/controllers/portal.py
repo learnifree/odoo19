@@ -45,7 +45,7 @@ class AmbAgreementPortal(CustomerPortal):
     # ------------------------------------------------------------------
 
     @route(['/my/agreements', '/my/agreements/page/<int:page>'],
-           type='http', auth='user', website=True)
+           type='http', auth='user', website=True, readonly=True)
     def portal_my_agreements(self, page=1, sortby=None, **kw):
         """List all agreements belonging to the logged-in partner."""
         partner = request.env.user.partner_id

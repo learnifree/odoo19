@@ -9,6 +9,7 @@ access_amb_payment_user,amb.payment.user,model_amb_payment,base.group_user,1,1,1
 access_amb_payment_manager,amb.payment.manager,model_amb_payment,base.group_user,1,1,1,1
 access_amb_agreement_user,amb.agreement.user,model_amb_agreement,base.group_user,1,1,1,1
 access_amb_agreement_manager,amb.agreement.manager,model_amb_agreement,base.group_user,1,1,1,1
+access_amb_agreement_portal,amb.agreement.portal,model_amb_agreement,base.group_portal,1,0,0,0
 access_amb_service_package_user,amb.service.package.user,model_amb_service_package,base.group_user,1,1,1,1
 access_amb_service_package_manager,amb.service.package.manager,model_amb_service_package,base.group_user,1,1,1,1
 access_amb_partner_agent_user,amb.partner.agent.user,model_amb_partner_agent,base.group_user,1,1,1,1

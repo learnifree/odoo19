@@ -216,11 +216,16 @@ class AmbAgreement(models.Model):
 
         return super().create(vals_list)
 
+    # @api.depends('id')
     def _compute_access_url(self):
         """Override portal.mixin to return the correct portal URL for agreements.
 
         This makes portal.mixin's _get_share_url() and get_portal_url() build
         links to /my/agreements/<id> instead of the default '#'.
+
+        @api.depends('id') is required so Odoo's ORM invalidates the cache and
+        actually calls this method — without it the field stays as '#' (the
+        base mixin default) and all portal links are broken.
         """
         for agreement in self:
             agreement.access_url = '/my/agreements/%s' % agreement.id
@@ -231,12 +236,18 @@ class AmbAgreement(models.Model):
         Uses portal.mixin._portal_ensure_token() so the token is always
         stored in the standard access_token field and is compatible with
         Odoo's _document_check_access() helper used in the portal controller.
+
+        Both the write() and _portal_ensure_token() are called with sudo()
+        so the token is always saved regardless of the calling user's access
+        rights on the access_token field.
         """
         for agreement in self:
             # Force a fresh token every time 'Send Agreement' is called so
             # old email links are invalidated.
-            agreement.sudo().write({'access_token': ''})
-            agreement._portal_ensure_token()
+            # Use False (not '') so _portal_ensure_token()'s `if not self.access_token`
+            # check reliably triggers a new token write.
+            agreement.sudo().write({'access_token': False})
+            agreement.sudo()._portal_ensure_token()
 
     # === Action Methods ===
 
