@@ -5,9 +5,7 @@ Agreement Model for AMB CRM
 Handles contract/agreement generation and e-signature support.
 """
 
-import uuid  # FIX: moved to module level — was inside generate_access_token() causing repeated imports
-
-from odoo import models, fields, api, _  # FIX: added _ for translation (was missing, caused NameError)
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -115,13 +113,10 @@ class AmbAgreement(models.Model):
     )
 
     # E-Signature Fields
-    # NOTE: portal.mixin also provides access_token — keeping this explicit field
-    # ensures index=True for fast token lookups in sudo().search()
-    access_token = fields.Char(
-        string='Access Token',
-        copy=False,
-        index=True,
-    )
+    # NOTE: portal.mixin already provides access_token — we do NOT redefine it here.
+    # Redefining it caused a field conflict that broke _portal_ensure_token() and
+    # made the portal URL resolve to '#' instead of /my/agreements/<id>.
+    # Token generation is handled via _portal_ensure_token() in generate_access_token().
 
     signature_data = fields.Binary(
         string='Customer Signature',
@@ -221,14 +216,27 @@ class AmbAgreement(models.Model):
 
         return super().create(vals_list)
 
-    def generate_access_token(self):
-        """Generate a fresh UUID access token for portal signing.
+    def _compute_access_url(self):
+        """Override portal.mixin to return the correct portal URL for agreements.
 
-        Called every time the agreement is sent, ensuring the token
-        is always valid and never reused from a previous send.
+        This makes portal.mixin's _get_share_url() and get_portal_url() build
+        links to /my/agreements/<id> instead of the default '#'.
         """
         for agreement in self:
-            agreement.write({'access_token': str(uuid.uuid4())})
+            agreement.access_url = '/my/agreements/%s' % agreement.id
+
+    def generate_access_token(self):
+        """Generate / refresh the portal access token for signing.
+
+        Uses portal.mixin._portal_ensure_token() so the token is always
+        stored in the standard access_token field and is compatible with
+        Odoo's _document_check_access() helper used in the portal controller.
+        """
+        for agreement in self:
+            # Force a fresh token every time 'Send Agreement' is called so
+            # old email links are invalidated.
+            agreement.sudo().write({'access_token': ''})
+            agreement._portal_ensure_token()
 
     # === Action Methods ===
 
@@ -242,9 +250,12 @@ class AmbAgreement(models.Model):
             if template:
                 template.send_mail(agreement.id, force_send=True)
             else:
-                # FIX: was using _() without importing it — now imported at top of file
+                # Fallback chatter note when email template is missing
+                portal_url = '%s/my/agreements/%s?access_token=%s' % (
+                    agreement.get_base_url(), agreement.id, agreement.access_token
+                )
                 agreement.message_post(
-                    body=_('Agreement sent for signing. Customer can sign at: /amb/contract/sign/%s') % agreement.access_token,
+                    body=_('Agreement sent for signing. Customer portal link: %s') % portal_url,
                     message_type='notification',
                     subtype_xmlid='mail.mt_note',
                 )
