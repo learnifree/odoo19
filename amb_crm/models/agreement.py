@@ -216,16 +216,17 @@ class AmbAgreement(models.Model):
 
         return super().create(vals_list)
 
-    # @api.depends('id')
     def _compute_access_url(self):
         """Override portal.mixin to return the correct portal URL for agreements.
 
         This makes portal.mixin's _get_share_url() and get_portal_url() build
         links to /my/agreements/<id> instead of the default '#'.
 
-        @api.depends('id') is required so Odoo's ORM invalidates the cache and
-        actually calls this method — without it the field stays as '#' (the
-        base mixin default) and all portal links are broken.
+        No @api.depends decorator needed: access_url is a non-stored computed
+        field, so Odoo recomputes it on every read — always returning the
+        correct /my/agreements/<id> URL.
+        Note: @api.depends('id') is explicitly forbidden in Odoo 19
+        (raises NotImplementedError).
         """
         for agreement in self:
             agreement.access_url = '/my/agreements/%s' % agreement.id

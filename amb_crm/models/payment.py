@@ -76,25 +76,28 @@ class AmbPayment(models.Model):
 
     # ===== NEW: Invoice Integration Fields =====
     
-    # Invoice Amount Fields
+    # Invoice Amount Fields (non-stored, computed via _compute_invoice_amounts)
     invoice_amount = fields.Monetary(
         string='Invoice Total',
         currency_field='currency_id',
-        compute='_compute_invoice_fields',
+        compute='_compute_invoice_amounts',
+        compute_sudo=True,
         readonly=True,
     )
     
     invoice_paid_amount = fields.Monetary(
         string='Amount Paid',
         currency_field='currency_id',
-        compute='_compute_invoice_fields',
+        compute='_compute_invoice_amounts',
+        compute_sudo=True,
         readonly=True,
     )
     
     invoice_outstanding_balance = fields.Monetary(
         string='Outstanding Balance',
         currency_field='currency_id',
-        compute='_compute_invoice_fields',
+        compute='_compute_invoice_amounts',
+        compute_sudo=True,
         readonly=True,
     )
     
@@ -106,12 +109,12 @@ class AmbPayment(models.Model):
     )
     
     invoice_due_date = fields.Date(
-        string='Due Date',
+        string='Invoice Due Date',
         related='invoice_id.invoice_date_due',
         readonly=True,
     )
     
-    # Invoice Status Fields
+    # Invoice Status Fields (stored, computed via _compute_invoice_payment_state)
     invoice_payment_state = fields.Selection(
         string='Payment Status',
         selection=[
@@ -122,7 +125,8 @@ class AmbPayment(models.Model):
             ('reversed', 'Reversed'),
             ('blocked', 'Blocked'),
         ],
-        compute='_compute_invoice_fields',
+        compute='_compute_invoice_payment_state',
+        compute_sudo=True,
         readonly=True,
         store=True,
     )
@@ -268,19 +272,34 @@ class AmbPayment(models.Model):
                 rec.state not in ('paid', 'cancelled', 'refunded')
             )
 
-    @api.depends('invoice_id', 'invoice_id.amount_total', 'invoice_id.amount_residual', 'invoice_id.payment_state')
-    def _compute_invoice_fields(self):
-        """Compute invoice-related fields from linked account.move"""
+    @api.depends('invoice_id', 'invoice_id.amount_total', 'invoice_id.amount_residual')
+    def _compute_invoice_amounts(self):
+        """Compute non-stored invoice monetary fields from linked account.move.
+
+        Kept separate from _compute_invoice_payment_state because Odoo 19
+        requires all fields sharing a compute method to have the same 'store' value.
+        """
         for rec in self:
             if rec.invoice_id:
                 rec.invoice_amount = rec.invoice_id.amount_total
                 rec.invoice_outstanding_balance = rec.invoice_id.amount_residual
                 rec.invoice_paid_amount = rec.invoice_id.amount_total - rec.invoice_id.amount_residual
-                rec.invoice_payment_state = rec.invoice_id.payment_state
             else:
                 rec.invoice_amount = 0
                 rec.invoice_outstanding_balance = 0
                 rec.invoice_paid_amount = 0
+
+    @api.depends('invoice_id', 'invoice_id.payment_state')
+    def _compute_invoice_payment_state(self):
+        """Compute stored invoice payment state from linked account.move.
+
+        Kept separate from _compute_invoice_amounts because Odoo 19
+        requires all fields sharing a compute method to have the same 'store' value.
+        """
+        for rec in self:
+            if rec.invoice_id:
+                rec.invoice_payment_state = rec.invoice_id.payment_state
+            else:
                 rec.invoice_payment_state = 'not_paid'
 
     @api.depends('invoice_id', 'invoice_id.invoice_date_due', 'invoice_id.payment_state', 'invoice_id.state')
@@ -323,7 +342,6 @@ class AmbPayment(models.Model):
         
         return res
 
-    @api.model
     @api.model
     def create(self, vals_list):
         """Generate sequence for new payments"""
